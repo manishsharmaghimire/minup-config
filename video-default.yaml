@@ -1,22 +1,42 @@
-
 server:
   port: 9092
+
 spring:
   application:
     name: video-service
+
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
 
   data:
     mongodb:
       uri: mongodb://root:example@localhost:27017/videodb?authSource=admin
 
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:9093/eureka/  # Point to the correct Eureka server URL
-    register-with-eureka: true
-    fetch-registry: true
 
 logging:
   level:
     org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-size: 10
+        permitted-number-of-calls-in-half-open-state: 2
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 50s
+
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
